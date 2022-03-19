@@ -1,6 +1,6 @@
 ﻿#include "EntitateRSA.h"
 
-unordered_set<size_t> EntitateRSA::_chei_private = {};
+unordered_set<long double> EntitateRSA::_chei_private = {};
 
 // „
 // This compliant solution uses std::random_device to generate a random value for seeding the Mersenne Twister engine object.
@@ -17,13 +17,13 @@ EntitateRSA::EntitateRSA() : _cheie_privata(0), _cheie_publica(0), _nume(Entitat
 
 EntitateRSA::EntitateRSA(const string& p_nume) : EntitateRSA()
 {
-    this->_nume = p_nume;  // NOLINT(cppcoreguidelines-prefer-member-initializer)
+    this->_nume = p_nume; // NOLINT(cppcoreguidelines-prefer-member-initializer)
 }
 
 EntitateRSA::~EntitateRSA()
 {
     EntitateRSA::_chei_private.erase(this->_cheie_privata);
-};
+}
 
 size_t EntitateRSA::CelMaiMareDivizorComun(const size_t& p_numar_1, const size_t& p_numar_2)
 {
@@ -55,4 +55,35 @@ size_t EntitateRSA::GenerareNumarPrimRandom()
         numar_random++;
     }
     return numar_random;
+}
+
+size_t EntitateRSA::GenerareCheiePrivata(const size_t& p_fi)
+{
+    size_t cheie_privata = 2;
+    while (cheie_privata < p_fi)
+    {
+        auto cheie_privata_prima_cu_fi = EntitateRSA::CelMaiMareDivizorComun(cheie_privata, p_fi);
+        if (cheie_privata_prima_cu_fi)
+        {
+            break;
+        }
+        cheie_privata++;
+    }
+    return cheie_privata;
+}
+
+void EntitateRSA::GenerareChei()
+{
+    do
+    {
+        auto numar_prim_1 = EntitateRSA::GenerareNumarPrimRandom();
+        auto numar_prim_2 = EntitateRSA::GenerareNumarPrimRandom();
+
+        auto fi = (numar_prim_1 - 1) * (numar_prim_2 - 1);
+        this->_cheie_privata = static_cast<long double>(GenerareCheiePrivata(fi));
+        this->_cheie_publica = fmod(1 / this->_cheie_privata, fi);
+    }
+    while (EntitateRSA::_chei_private.find(this->_cheie_privata) != EntitateRSA::_chei_private.end());
+
+    cout << "\nChei generate pentru " << this->_nume << "!\n";
 }

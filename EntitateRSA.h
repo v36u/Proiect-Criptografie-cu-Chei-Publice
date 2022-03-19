@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string>
 using std::string;
@@ -10,19 +10,25 @@ using std::unordered_set;
 using std::random_device;
 using std::mt19937;
 
+#include <iostream>
+using std::cout;
+
+#include <cmath>
+using std::fmod;
+
 // ReSharper disable once CppInconsistentNaming
 class EntitateRSA
 {
-
-    static unordered_set<size_t> _chei_private; // Pentru a evita coliziuni
+    // Pentru a evita coliziuni - șansă extrem de mică, dar de dragul conceptului
+    static unordered_set<long double> _chei_private;
 
     static random_device _generator_seed; // https://www.cplusplus.com/reference/random/random_device/
     static mt19937 _generator_numere_aleatorii; // https://www.cplusplus.com/reference/random/mt19937/
 
     const string _nedefinit = "NEDEFINIT";
 
-    size_t _cheie_privata;
-    size_t _cheie_publica;
+    long double _cheie_privata;
+    long double _cheie_publica;
     string _nume;
 
     static size_t CelMaiMareDivizorComun(const size_t&, const size_t&);
@@ -33,8 +39,12 @@ class EntitateRSA
 
     static size_t GenerareNumarPrimRandom();
 
+    static size_t GenerareCheiePrivata(const size_t&);
+
 public:
     EntitateRSA();
     explicit EntitateRSA(const string&);
     ~EntitateRSA();
+
+    void GenerareChei();
 };
