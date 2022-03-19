@@ -62,7 +62,7 @@ size_t EntitateRSA::GenerareCheiePrivata(const size_t& p_fi)
     size_t cheie_privata = 2;
     while (cheie_privata < p_fi)
     {
-        auto cheie_privata_prima_cu_fi = EntitateRSA::CelMaiMareDivizorComun(cheie_privata, p_fi);
+        auto cheie_privata_prima_cu_fi = EntitateRSA::CelMaiMareDivizorComun(cheie_privata, p_fi) == 1;
         if (cheie_privata_prima_cu_fi)
         {
             break;
@@ -84,6 +84,8 @@ void EntitateRSA::GenerareChei()
         this->_cheie_publica = fmod(1 / this->_cheie_privata, fi);
     }
     while (EntitateRSA::_chei_private.find(this->_cheie_privata) != EntitateRSA::_chei_private.end());
+
+    EntitateRSA::_chei_private.insert(this->_cheie_privata);
 
     cout << "\nChei generate pentru " << this->_nume << "!\n";
 }
