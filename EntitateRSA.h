@@ -16,5 +16,6 @@ class EntitateRSA
 
 public:
     EntitateRSA();
+    explicit EntitateRSA(const string&);
     ~EntitateRSA();
 };

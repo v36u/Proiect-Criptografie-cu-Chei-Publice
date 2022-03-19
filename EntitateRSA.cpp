@@ -4,6 +4,11 @@ EntitateRSA::EntitateRSA() : _cheie_privata(0), _cheie_publica(0), _nume(Entitat
 {
 }
 
+EntitateRSA::EntitateRSA(const string& p_nume) : EntitateRSA()
+{
+    this->_nume = p_nume;  // NOLINT(cppcoreguidelines-prefer-member-initializer)
+}
+
 EntitateRSA::~EntitateRSA() = default;
 
 size_t EntitateRSA::CelMaiMareDivizorComun(const int& p_numar_1, const int& p_numar_2)
