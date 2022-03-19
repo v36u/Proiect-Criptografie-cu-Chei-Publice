@@ -1,7 +1,6 @@
 ﻿#include "EntitateRSA.h"
 
 #include <Windows.h>
-#include <io.h>
 #include <fcntl.h>
 
 #pragma execution_character_set("utf-8")
@@ -9,7 +8,8 @@
 int main()
 {
     SetConsoleOutputCP(65001);
-    _setmode(_fileno(stdout), _O_U16TEXT);
+
+    cout << "=+= Program pentru demonstrarea conceptului de encriptare asimetrică - Criptografie cu Chei Publice =+=\n";
 
     auto bob = new EntitateRSA("Bob");
     bob->GenerareChei();
