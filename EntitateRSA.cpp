@@ -106,6 +106,10 @@ void EntitateRSA::GenerareChei()
     {
         auto numar_prim_1 = EntitateRSA::GenerareNumarPrimRandom();
         auto numar_prim_2 = EntitateRSA::GenerareNumarPrimRandom();
+        if (numar_prim_1 == numar_prim_2)
+        {
+            continue;
+        }
         this->_produs_numere_prime = numar_prim_1 * numar_prim_2;
 
         auto fi = (numar_prim_1 - 1) * (numar_prim_2 - 1);
