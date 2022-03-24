@@ -29,15 +29,12 @@ class EntitateRSA
     static const string NEDEFINIT;
     static const size_t LIMITA_NUMAR_ALEATOR;
 
-    // Pentru a evita coliziuni - șansă extrem de mică, dar de dragul conceptului
-    static unordered_set<long double> _chei_private;
-
     static random_device _generator_seed; // https://www.cplusplus.com/reference/random/random_device/
     static mt19937 _generator_numere_aleatorii; // https://www.cplusplus.com/reference/random/mt19937/
 
-    long double _cheie_privata;
-    long double _cheie_publica;
-    size_t _produs_numere_prime;
+    size_t _cheie_privata;
+    size_t _cheie_publica;
+    unsigned long long _produs_numere_prime;
     string _nume;
 
     enum TipCheie
@@ -46,7 +43,7 @@ class EntitateRSA
         Publica
     };
 
-    static size_t CelMaiMareDivizorComun(const size_t&, const size_t&);
+    static size_t GetCelMaiMareDivizorComun(const size_t&, const size_t&);
 
     static size_t GenerareNumarRandom();
 
@@ -56,12 +53,11 @@ class EntitateRSA
 
     static size_t GenerareCheiePrivata(const size_t&);
 
-    long double GetCheieFolosita(const TipCheie&) const;
+    size_t GenerareCheiePublica(const size_t&) const;
 
-    long double Encriptare(const long double& p_mesaj, const TipCheie&) const;
+    size_t GetCheieFolosita(const TipCheie&) const;
 
-    long double Decriptare(const long double& p_mesaj, const TipCheie&) const;
-                                                                  
+
 public:
     EntitateRSA();
     explicit EntitateRSA(const string&);
@@ -69,11 +65,14 @@ public:
 
     void GenerareChei();
 
-    long double EncriptareCuCheiePrivata(const long double&) const;
-    long double EncriptareCuCheiePublica(const long double&) const;
+    size_t EncriptareCuCheiePrivata(const size_t&) const;
+    size_t EncriptareCuCheiePublica(const size_t&) const;
 
-    long double DecriptareCuCheiePrivata(const long double&) const;
-    long double DecriptareCuCheiePublica(const long double&) const;
+    size_t DecriptareCuCheiePrivata(const size_t&) const;
+    size_t DecriptareCuCheiePublica(const size_t&) const;
+
+    size_t Encriptare(const size_t& p_mesaj) const;
+    size_t Decriptare(const size_t& p_mesaj) const;
 
     friend ostream& operator<<(ostream& p_stream, const EntitateRSA& p_entitate);
 };

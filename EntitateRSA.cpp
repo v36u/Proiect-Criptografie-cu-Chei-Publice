@@ -1,9 +1,7 @@
 ﻿#include "EntitateRSA.h"
 
 const string EntitateRSA::NEDEFINIT = "NEDEFINIT";
-const size_t EntitateRSA::LIMITA_NUMAR_ALEATOR = 5;
-
-unordered_set<long double> EntitateRSA::_chei_private = {};
+const size_t EntitateRSA::LIMITA_NUMAR_ALEATOR = 100;
 
 // ”
 // This compliant solution uses std::random_device to generate a random value for seeding the Mersenne Twister engine object.
@@ -14,14 +12,19 @@ unordered_set<long double> EntitateRSA::_chei_private = {};
 random_device EntitateRSA::_generator_seed = {};
 mt19937 EntitateRSA::_generator_numere_aleatorii(EntitateRSA::_generator_seed());
 
-size_t EntitateRSA::CelMaiMareDivizorComun(const size_t& p_numar_1, const size_t& p_numar_2)
+size_t EntitateRSA::GetCelMaiMareDivizorComun(const size_t& p_numar_1, const size_t& p_numar_2)
 {
-    return p_numar_2 ? p_numar_1 : CelMaiMareDivizorComun(p_numar_2, p_numar_1 % p_numar_2);
+    return !p_numar_2 ? p_numar_1 : GetCelMaiMareDivizorComun(p_numar_2, p_numar_1 % p_numar_2);
 }
 
 size_t EntitateRSA::GenerareNumarRandom()
 {
-    return EntitateRSA::_generator_numere_aleatorii() % LIMITA_NUMAR_ALEATOR;
+    auto numar_aleator = EntitateRSA::_generator_numere_aleatorii() % LIMITA_NUMAR_ALEATOR;
+    while (numar_aleator <= 1)
+    {
+        numar_aleator = EntitateRSA::_generator_numere_aleatorii() % LIMITA_NUMAR_ALEATOR;
+    }
+    return numar_aleator;
 }
 
 bool EntitateRSA::EstePrim(const size_t& p_numar)
@@ -48,20 +51,30 @@ size_t EntitateRSA::GenerareNumarPrimRandom()
 
 size_t EntitateRSA::GenerareCheiePrivata(const size_t& p_fi)
 {
-    size_t cheie_privata = 2;
-    while (cheie_privata < p_fi)
+    while (true)
     {
-        auto cheie_privata_prima_cu_fi = EntitateRSA::CelMaiMareDivizorComun(cheie_privata, p_fi) == 1;
-        if (cheie_privata_prima_cu_fi)
+        auto cheie_privata = EntitateRSA::GenerareNumarPrimRandom() % p_fi;
+        if (cheie_privata >= 2 && EntitateRSA::GetCelMaiMareDivizorComun(cheie_privata, p_fi) == 1)
         {
-            break;
+            return cheie_privata;
         }
-        cheie_privata++;
     }
-    return cheie_privata;
 }
 
-long double EntitateRSA::GetCheieFolosita(const TipCheie& p_tip_cheie) const
+size_t EntitateRSA::GenerareCheiePublica(const size_t& p_fi) const
+{
+    size_t cheie_publica = p_fi / this->_cheie_privata;
+    while (true)
+    {
+        if (cheie_publica * this->_cheie_privata % p_fi == 1)
+        {
+            return cheie_publica;
+        }
+        cheie_publica++;
+    }
+}
+
+size_t EntitateRSA::GetCheieFolosita(const TipCheie& p_tip_cheie) const
 {
     switch (p_tip_cheie)
     {
@@ -73,20 +86,38 @@ long double EntitateRSA::GetCheieFolosita(const TipCheie& p_tip_cheie) const
     throw logic_error("Tipul de cheie " + to_string(p_tip_cheie) + " neimplementat");
 }
 
-long double EntitateRSA::Encriptare(const long double& p_mesaj, const TipCheie& p_tip_cheie) const
+size_t EntitateRSA::Encriptare(const size_t& p_mesaj) const
 {
-    auto cheie_folosita = GetCheieFolosita(p_tip_cheie);
-    auto mesaj_encriptat = pow(p_mesaj, cheie_folosita);
-    mesaj_encriptat = fmod(mesaj_encriptat, this->_produs_numere_prime);
-    return mesaj_encriptat;
+    long msg_des = 1;
+    long root = p_mesaj;
+    long index = this->_cheie_privata;
+    while (index)
+    {
+        if (index & 1)
+            msg_des = (msg_des * root) % this->_produs_numere_prime;
+        index >>= 1;
+        root = (root * root) % this->_produs_numere_prime;
+    }
+    return msg_des;
 }
 
-long double EntitateRSA::Decriptare(const long double& p_mesaj, const TipCheie&) const
+size_t EntitateRSA::Decriptare(const size_t& p_mesaj) const
 {
-    return 0;
+    long msg_des = 1;
+    long root = p_mesaj;
+    long index = this->_cheie_publica;
+    while (index)
+    {
+        if (index & 1)
+            msg_des = (msg_des * root) % this->_produs_numere_prime;
+        index >>= 1;
+        root = (root * root) % this->_produs_numere_prime;
+    }
+    return msg_des;
 }
 
-EntitateRSA::EntitateRSA() : _cheie_privata(0), _cheie_publica(0), _produs_numere_prime(0), _nume(EntitateRSA::NEDEFINIT)
+EntitateRSA::EntitateRSA() : _cheie_privata(0), _cheie_publica(0), _produs_numere_prime(0),
+                             _nume(EntitateRSA::NEDEFINIT)
 {
 }
 
@@ -95,52 +126,44 @@ EntitateRSA::EntitateRSA(const string& p_nume) : EntitateRSA()
     this->_nume = p_nume; // NOLINT(cppcoreguidelines-prefer-member-initializer)
 }
 
-EntitateRSA::~EntitateRSA()
-{
-    EntitateRSA::_chei_private.erase(this->_cheie_privata);
-}
+EntitateRSA::~EntitateRSA() = default;
 
 void EntitateRSA::GenerareChei()
 {
-    do
+    auto numar_prim_1 = EntitateRSA::GenerareNumarPrimRandom();
+    auto numar_prim_2 = EntitateRSA::GenerareNumarPrimRandom();
+    while (numar_prim_1 == numar_prim_2)
     {
-        auto numar_prim_1 = EntitateRSA::GenerareNumarPrimRandom();
-        auto numar_prim_2 = EntitateRSA::GenerareNumarPrimRandom();
-        if (numar_prim_1 == numar_prim_2)
-        {
-            continue;
-        }
-        this->_produs_numere_prime = numar_prim_1 * numar_prim_2;
-
-        auto fi = (numar_prim_1 - 1) * (numar_prim_2 - 1);
-        this->_cheie_privata = static_cast<long double>(GenerareCheiePrivata(fi));
-        this->_cheie_publica = fmod(1 / this->_cheie_privata, fi);
+        numar_prim_2 = EntitateRSA::GenerareNumarPrimRandom();
     }
-    while (EntitateRSA::_chei_private.find(this->_cheie_privata) != EntitateRSA::_chei_private.end());
 
-    EntitateRSA::_chei_private.insert(this->_cheie_privata);
+    this->_produs_numere_prime = numar_prim_1 * numar_prim_2;
+
+    auto fi = (numar_prim_1 - 1) * (numar_prim_2 - 1);
+    this->_cheie_privata = EntitateRSA::GenerareCheiePrivata(fi);
+    this->_cheie_publica = this->GenerareCheiePublica(fi);
 
     cout << "\nChei generate pentru " << this->_nume << "!";
 }
 
-long double EntitateRSA::EncriptareCuCheiePrivata(const long double& p_mesaj) const
+size_t EntitateRSA::EncriptareCuCheiePrivata(const size_t& p_mesaj) const
 {
-    return this->Encriptare(p_mesaj, EntitateRSA::TipCheie::Publica);
+    return 0;
 }
 
-long double EntitateRSA::EncriptareCuCheiePublica(const long double& p_mesaj) const
+size_t EntitateRSA::EncriptareCuCheiePublica(const size_t& p_mesaj) const
 {
-    return this->Encriptare(p_mesaj, EntitateRSA::TipCheie::Publica);
+    return 0;
 }
 
-long double EntitateRSA::DecriptareCuCheiePrivata(const long double& p_mesaj) const
+size_t EntitateRSA::DecriptareCuCheiePrivata(const size_t& p_mesaj) const
 {
-    return this->Decriptare(p_mesaj, EntitateRSA::TipCheie::Privata);
+    return 0;
 }
 
-long double EntitateRSA::DecriptareCuCheiePublica(const long double& p_mesaj) const
+size_t EntitateRSA::DecriptareCuCheiePublica(const size_t& p_mesaj) const
 {
-    return this->Decriptare(p_mesaj, EntitateRSA::TipCheie::Publica);
+    return 0;
 }
 
 ostream& operator<<(ostream& p_stream, const EntitateRSA& p_entitate)

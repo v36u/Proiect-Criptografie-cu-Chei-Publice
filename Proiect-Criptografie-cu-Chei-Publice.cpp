@@ -5,15 +5,16 @@
 
 #pragma execution_character_set("utf-8")
 
-void AfisareStareCurentaMesaj(const long double& p_mesaj)
+void AfisareStareCurentaMesaj(const size_t& p_mesaj)
 {
     cout << "\nAcum mesajul arată așa: " << p_mesaj;
 }
 
 void TrimitereMesajDeLaOEntitateLaAltaEntitate(EntitateRSA& p_emitator, EntitateRSA& p_receptor)
 {
-    long double mesaj;
-    cout << "\nIntroduceți mesajul care trebuie trimis de la " << p_emitator << " către " << p_receptor << " (număr real): ";
+    size_t mesaj;
+    cout << "\nIntroduceți mesajul care trebuie trimis de la " << p_emitator << " către " << p_receptor <<
+        " (număr real): ";
     cin >> mesaj;
 
     mesaj = p_emitator.EncriptareCuCheiePrivata(mesaj);
@@ -53,20 +54,26 @@ int main()
     auto bob = new EntitateRSA("Bob");
     bob->GenerareChei();
 
-    auto alice = new EntitateRSA("Alice");
-    alice->GenerareChei();
+    // auto alice = new EntitateRSA("Alice");
+    // alice->GenerareChei();
+    //
+    // cout << '\n';
+    //
+    // TrimitereMesajDeLaOEntitateLaAltaEntitate(*bob, *alice);
+    //
+    // delete bob;
+    // delete alice;
+    //
+    // // Ca să fie ceva mai clean la finalul execuției
+    // cout << '\n';
+    // cin.ignore();
+    // cin.get();
 
-    cout << '\n';
-
-    TrimitereMesajDeLaOEntitateLaAltaEntitate(*bob, *alice);
-
-    delete bob;
-    delete alice;
-
-    // Ca să fie ceva mai clean la finalul execuției
-    cout << '\n';
-    cin.ignore();
-    cin.get();
+    size_t mesaj = 3;
+    mesaj = bob->Encriptare(mesaj);
+    cout << '\n' << mesaj;
+    mesaj = bob->Decriptare(mesaj);
+    cout << '\n' << mesaj << '\n';
 
     return EXIT_SUCCESS;
 }
