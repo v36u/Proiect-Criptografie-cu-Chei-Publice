@@ -51,12 +51,13 @@ class EntitateRSA
 
     static size_t GenerareNumarPrimRandom();
 
-    static size_t GenerareCheiePrivata(const size_t&);
+    size_t GenerareCheiePrivata(const size_t&);
 
     size_t GenerareCheiePublica(const size_t&) const;
 
     size_t GetCheieFolosita(const TipCheie&) const;
 
+    size_t EncriptareDecriptare(const size_t&, const TipCheie&) const;
 
 public:
     EntitateRSA();
@@ -65,14 +66,8 @@ public:
 
     void GenerareChei();
 
-    size_t EncriptareCuCheiePrivata(const size_t&) const;
-    size_t EncriptareCuCheiePublica(const size_t&) const;
-
-    size_t DecriptareCuCheiePrivata(const size_t&) const;
-    size_t DecriptareCuCheiePublica(const size_t&) const;
-
-    size_t Encriptare(const size_t& p_mesaj) const;
-    size_t Decriptare(const size_t& p_mesaj) const;
+    size_t EncriptareDecriptarePrivata(const size_t&) const;
+    size_t EncriptareDecriptarePublica(const size_t&) const;
 
     friend ostream& operator<<(ostream& p_stream, const EntitateRSA& p_entitate);
 };

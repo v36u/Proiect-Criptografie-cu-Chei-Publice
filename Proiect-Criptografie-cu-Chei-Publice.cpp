@@ -17,11 +17,6 @@ void TrimitereMesajDeLaOEntitateLaAltaEntitate(EntitateRSA& p_emitator, Entitate
         " (număr real): ";
     cin >> mesaj;
 
-    mesaj = p_emitator.EncriptareCuCheiePrivata(mesaj);
-    cout << mesaj << '\n';
-    mesaj = p_emitator.DecriptareCuCheiePublica(mesaj);
-    cout << mesaj << '\n';
-
     // mesaj = p_emitator.EncriptareCuCheiePrivata(mesaj);
     // cout << '\n' << p_emitator << " encriptează mesajul cu cheia sa privată pentru a se putea dovedi că mesajul ar fi putut să fie scris doar de el.";
     // AfisareStareCurentaMesaj(mesaj);
@@ -69,10 +64,10 @@ int main()
     // cin.ignore();
     // cin.get();
 
-    size_t mesaj = 3;
-    mesaj = bob->Encriptare(mesaj);
+    size_t mesaj = 124;
+    mesaj = bob->EncriptareDecriptarePrivata(mesaj);
     cout << '\n' << mesaj;
-    mesaj = bob->Decriptare(mesaj);
+    mesaj = bob->EncriptareDecriptarePublica(mesaj);
     cout << '\n' << mesaj << '\n';
 
     return EXIT_SUCCESS;
