@@ -1,7 +1,9 @@
 ﻿#include "EntitateRSA.h"
 
 const string EntitateRSA::NEDEFINIT = "NEDEFINIT";
-const size_t EntitateRSA::LIMITA_NUMAR_ALEATOR = 100;
+
+const size_t EntitateRSA::LIMITA_INFERIOARA_NUMAR_ALEATOR = 10;
+const size_t EntitateRSA::LIMITA_SUPERIOARA_NUMAR_ALEATOR = 20;
 
 // ”
 // This compliant solution uses std::random_device to generate a random value for seeding the Mersenne Twister engine object.
@@ -13,17 +15,16 @@ random_device EntitateRSA::_generator_seed = {};
 mt19937 EntitateRSA::_generator_numere_aleatorii(EntitateRSA::_generator_seed());
 
 size_t EntitateRSA::GetCelMaiMareDivizorComun(const size_t& p_numar_1, const size_t& p_numar_2)
-{
+{ 
     return !p_numar_2 ? p_numar_1 : GetCelMaiMareDivizorComun(p_numar_2, p_numar_1 % p_numar_2);
 }
 
 size_t EntitateRSA::GenerareNumarRandom()
 {
-    auto numar_aleator = EntitateRSA::_generator_numere_aleatorii() % LIMITA_NUMAR_ALEATOR;
-    while (numar_aleator <= 1)
-    {
-        numar_aleator = EntitateRSA::_generator_numere_aleatorii() % LIMITA_NUMAR_ALEATOR;
-    }
+    auto numar_aleator =
+        LIMITA_INFERIOARA_NUMAR_ALEATOR +
+        EntitateRSA::_generator_numere_aleatorii() %
+        LIMITA_SUPERIOARA_NUMAR_ALEATOR;
     return numar_aleator;
 }
 
@@ -50,9 +51,9 @@ size_t EntitateRSA::GenerareNumarPrimRandom()
 }
 
 // ReSharper disable once CppMemberFunctionMayBeStatic <=== Pentru consistență
-size_t EntitateRSA::GenerareCheiePrivata(const size_t& p_fi)
+size_t EntitateRSA::GenerareCheiePrivata(const unsigned long long& p_fi)
 {
-    auto cheie_privata = EntitateRSA::GenerareNumarPrimRandom() % p_fi;
+    size_t cheie_privata = EntitateRSA::GenerareNumarPrimRandom() % p_fi;
     while (cheie_privata < 2 || EntitateRSA::GetCelMaiMareDivizorComun(cheie_privata, p_fi) != 1)
     {
         cheie_privata = EntitateRSA::GenerareNumarPrimRandom() % p_fi;
@@ -60,7 +61,7 @@ size_t EntitateRSA::GenerareCheiePrivata(const size_t& p_fi)
     return cheie_privata;
 }
 
-size_t EntitateRSA::GenerareCheiePublica(const size_t& p_fi) const
+size_t EntitateRSA::GenerareCheiePublica(const unsigned long long& p_fi) const
 {
     size_t cheie_publica = p_fi / this->_cheie_privata;
     while (cheie_publica * this->_cheie_privata % p_fi != 1)
@@ -82,18 +83,20 @@ size_t EntitateRSA::GetCheieFolosita(const TipCheie& p_tip_cheie) const
     throw logic_error("Tipul de cheie " + to_string(p_tip_cheie) + " neimplementat");
 }
 
-size_t EntitateRSA::EncriptareDecriptare(const size_t& p_mesaj, const TipCheie& p_tip_cheie) const
+unsigned long long EntitateRSA::EncriptareDecriptare(const unsigned long long& p_mesaj, const TipCheie& p_tip_cheie) const
 {
     size_t cheie_folosita = this->GetCheieFolosita(p_tip_cheie);
-    size_t mesaj_procesat = 1;
+    unsigned long long mesaj_procesat = 1;
     unsigned long long putere = p_mesaj;
 
     while (cheie_folosita)
     {
         if (cheie_folosita & 1)
-            mesaj_procesat = (mesaj_procesat * putere) % this->_produs_numere_prime;
+        {
+            mesaj_procesat = mesaj_procesat * putere % this->_produs_numere_prime;
+        }
         cheie_folosita >>= 1;
-        putere = (putere * putere) % this->_produs_numere_prime;
+        putere = putere * putere % this->_produs_numere_prime;
     }
 
     return mesaj_procesat;
@@ -122,7 +125,7 @@ void EntitateRSA::GenerareChei()
 
     this->_produs_numere_prime = numar_prim_1 * numar_prim_2;
 
-    auto fi = (numar_prim_1 - 1) * (numar_prim_2 - 1);
+    unsigned long long fi = (numar_prim_1 - 1) * (numar_prim_2 - 1);
     this->_cheie_privata = this->GenerareCheiePrivata(fi);
     this->_cheie_publica = this->GenerareCheiePublica(fi);
 

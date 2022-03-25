@@ -27,7 +27,8 @@ using std::logic_error;
 class EntitateRSA
 {
     static const string NEDEFINIT;
-    static const size_t LIMITA_NUMAR_ALEATOR;
+    static const size_t LIMITA_INFERIOARA_NUMAR_ALEATOR;
+    static const size_t LIMITA_SUPERIOARA_NUMAR_ALEATOR;
 
     static random_device _generator_seed; // https://www.cplusplus.com/reference/random/random_device/
     static mt19937 _generator_numere_aleatorii; // https://www.cplusplus.com/reference/random/mt19937/
@@ -51,13 +52,13 @@ class EntitateRSA
 
     static size_t GenerareNumarPrimRandom();
 
-    size_t GenerareCheiePrivata(const size_t&);
+    size_t GenerareCheiePrivata(const unsigned long long&);
 
-    size_t GenerareCheiePublica(const size_t&) const;
+    size_t GenerareCheiePublica(const unsigned long long&) const;
 
     size_t GetCheieFolosita(const TipCheie&) const;
 
-    size_t EncriptareDecriptare(const size_t&, const TipCheie&) const;
+    unsigned long long EncriptareDecriptare(const unsigned long long&, const TipCheie&) const;
 
 public:
     EntitateRSA();
