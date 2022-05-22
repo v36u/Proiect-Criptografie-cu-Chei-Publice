@@ -2,8 +2,8 @@
 
 const string EntitateRSA::NEDEFINIT = "NEDEFINIT";
 
-const size_t EntitateRSA::LIMITA_INFERIOARA_NUMAR_ALEATOR = 10;
-const size_t EntitateRSA::LIMITA_SUPERIOARA_NUMAR_ALEATOR = 20;
+const size_t EntitateRSA::LIMITA_INFERIOARA_NUMAR_ALEATOR = 2;
+const size_t EntitateRSA::LIMITA_SUPERIOARA_NUMAR_ALEATOR = 100;
 
 // ”
 // This compliant solution uses std::random_device to generate a random value for seeding the Mersenne Twister engine object.
@@ -128,8 +128,6 @@ void EntitateRSA::GenerareChei()
     unsigned long long fi = (numar_prim_1 - 1) * (numar_prim_2 - 1);
     this->_cheie_privata = this->GenerareCheiePrivata(fi);
     this->_cheie_publica = this->GenerareCheiePublica(fi);
-
-    cout << "\nChei generate pentru " << this->_nume << "!";
 }
 
 size_t EntitateRSA::EncriptareDecriptarePrivata(const size_t& p_mesaj) const
